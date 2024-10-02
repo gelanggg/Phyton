@@ -1,0 +1,352 @@
+import tkinter as tk
+import re
+import pyperclip
+from tkinter import Menu
+
+root = tk.Tk()
+root.title("Calculator")
+
+menu_bar = Menu(root)
+root.config(menu=menu_bar)
+
+
+file_menu = Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="File")
+file_menu.add_separator()
+file_menu.add_command(label="Exit")
+
+
+edit_menu = Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="Edit")
+edit_menu.add_command(label="Copy")
+edit_menu.add_command(label="Paste")
+
+
+view_menu = Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="View")
+view_menu.add_command(label="Basic")
+view_menu.add_command(label="Programmer")
+
+options_menu = Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="Options")
+options_menu.add_command(label="Themes")
+
+
+help_menu = Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="Help")
+help_menu.add_command(label="About")
+
+
+
+operation_buttons = {
+    "+": False,
+    "-": False,
+    "*": False,
+    "/": False,
+    "=": False,
+    ".": False,
+}
+
+op_chars = "+-*/"
+last_operation = ""
+valid_chars = "0123456789"
+invalid = "Error"
+decimal_used = False
+
+
+def btn_Click(number):
+    current = entry.get()
+
+    if current == invalid:
+        entry.delete(0, tk.END)
+        current = ""
+
+    if current == "0" and number != 0:
+        entry.delete(0, tk.END)
+        entry.insert(0, str(number))
+    elif current and current[-1] in op_chars and number == 0:
+        pass
+    elif current == "0" and number == 0:
+        pass
+    else:
+        entry.insert(tk.END, str(number))
+
+    for op in operation_buttons:
+        operation_buttons[op] = False
+
+
+def bt_Click(char):
+    current = entry.get()
+
+    global last_operation
+    global op_chars
+    global valid_chars
+    global expression, decimal_used
+    num =str(char)
+    if num == "." and decimal_used:
+        return
+    elif num == ".":
+        decimal_used = True
+
+    if char in op_chars:
+        if current and current[-1] in op_chars:
+            # Replace the last operator with the new one
+            entry.delete(len(current) - 1, tk.END)
+        elif current and current[-1] not in valid_chars and current[-1] != ".":
+            return  # Prevent consecutive operators
+        last_operation = char  # Update the last operation
+    else:
+        if num == '.':
+            if current and current[-1] == '.':
+                return
+            if '.' in current:
+                op = max(current.rfind("+"), current.rfind("-"), current.rfind("*"), current.rfind("/"))
+                if current.rfind('.') > op:
+                    return
+
+        entry.delete(0, tk.END)
+        entry.insert(0, current + str(char))
+
+    entry.insert(tk.END, char)
+
+def Clear():
+    entry.delete(0, tk.END)
+    for op in operation_buttons:
+        operation_buttons[op] = False
+
+
+def Delete():
+    global invalid
+    current = entry.get()
+    if current == invalid:
+        entry.delete(0, tk.END)
+    else:
+        current = entry.get()
+        entry.delete(0, tk.END)
+        entry.insert(0, current[:-1])
+
+def Negativeop():
+    current = entry.get()
+    if current.startswith('-'):
+        entry.delete(0)
+    else:
+        entry.insert(0, '-')
+
+
+def Percent():
+    current = entry.get()
+    try:
+        value = float(current)
+        result = value / 100
+        entry.delete(0, tk.END)
+        entry.insert(0, result)
+    except:
+        entry.delete(0, tk.END)
+        entry.insert(0, "Error")
+
+
+def calculate():
+    try:
+        result = eval(entry.get())
+        entry.delete(0, tk.END)
+        entry.insert(0, result)
+        for op in operation_buttons:
+            operation_buttons[op] = False
+    except:
+        entry.delete(0, tk.END)
+        entry.insert(0, "Error")
+
+def convert():
+    input_number = entry.get()
+    from_base = from_base_var.get()
+    to_base = to_base_var.get()
+
+    try:
+        if from_base == "Decimal":
+            decimal_number = int(input_number)
+        elif from_base == "Binary":
+            decimal_number = int(input_number, 2)
+        elif from_base == "Octal":
+            decimal_number = int(input_number, 8)
+        elif from_base == "Hexadecimal":
+            decimal_number = int(input_number, 16)
+        else:
+            result.config(text="Error")
+            return
+
+        if to_base == "Decimal":
+            result.config(text=str(decimal_number))
+        elif to_base == "Binary":
+            result.config(text=bin(decimal_number)[2:])
+        elif to_base == "Octal":
+            result.config(text=oct(decimal_number)[2:])
+        elif to_base == "Hexadecimal":
+            result.config(text=hex(decimal_number)[2:].upper())
+        else:
+            result.config(text="Error")
+
+    except ValueError:
+        result.config(text="Invalid input")
+def toggle_calculator():
+    if calculator_frame.winfo_manager():
+        calculator_frame.grid_remove()
+        toggle.config(text="Show Converter")
+    else:
+        calculator_frame.grid()
+        toggle.config(text="Hide Converter")
+
+
+def toggle_converter():
+    if calculator_frame.winfo_manager():
+        calculator_frame.grid_remove()
+        toggle.config(text="Show Converter")
+    else:
+        calculator_frame.grid()
+        toggle.config(text="Hide Converter")
+
+def Equal():
+    try:
+        expression = entry.get()
+
+        # Remove leading zeros from individual numbers
+        expression = re.sub(r'\b0+(\d+)\b', r'\1', expression)
+
+        # Check if the expression starts with an operator, add a '0' in front of it
+        if re.match(r'^[+\-*/]', expression):
+            expression = '0' + expression
+
+        result = eval(expression)
+        entry.delete(0, tk.END)
+        entry.insert(0, result)
+    except:
+        entry.delete(0, tk.END)
+        entry.insert(0, "Error")
+
+def copy_to_clipboard():
+    value_to_copy = result.cget("text")  # Get the text from the output label
+    root.clipboard_clear()  # Clear the clipboard
+    root.clipboard_append(value_to_copy)  # Append the value to the clipboard
+    root.update()  # Update the clipboard
+
+
+
+
+
+entry = tk.Entry(root, width=17, borderwidth=5, font=('Times 30'), bg="papaya whip")
+entry.grid(row=0, column=0, columnspan=4)
+
+calculator_frame = tk.Frame(root)
+calculator_frame.grid(row=7, column=0, columnspan=4)
+
+conversion_type = tk.StringVar()
+conversion_type.set(None)
+
+from_base = tk.Label(calculator_frame,text = "Convert from: ", font= "times", bg="#ffe5ec")
+from_base.grid(column=1, row=7, columnspan=4)
+from_base_var = tk.StringVar(calculator_frame)
+
+to_base = tk.Label(calculator_frame,text = "Convert to: ", font= "times", bg="#ffe5ec")
+to_base.grid(column=1, row=9, columnspan=4)
+to_base_var = tk.StringVar(calculator_frame)
+
+
+decimal = tk.Radiobutton(calculator_frame,text="Dec", variable= from_base_var, value="Decimal", font="times", bg="#ffe5ec")
+decimal.grid(column=1, row=8)
+binary = tk.Radiobutton(calculator_frame,text="Bin", variable= from_base_var, value="Binary", font="times", bg="#ffe5ec")
+binary.grid(column=2, row=8)
+octal = tk.Radiobutton(calculator_frame,text="Octa", variable= from_base_var, value="Octal", font="times", bg="#ffe5ec")
+octal.grid(column=3, row=8)
+hexadecimal = tk.Radiobutton(calculator_frame,text="Hexa", variable= from_base_var, value="Hexadecimal ", font="times", bg="#ffe5ec")
+hexadecimal.grid(column=4, row=8)
+
+
+decimal = tk.Radiobutton(calculator_frame,text="Dec", variable= to_base_var, value="Decimal", font="times", bg="#ffe5ec")
+decimal.grid(column=1, row=10)
+binary = tk.Radiobutton(calculator_frame,text="Bin", variable= to_base_var, value="Binary", font="times", bg="#ffe5ec")
+binary.grid(column=2, row=10)
+octal = tk.Radiobutton(calculator_frame,text="Octa", variable= to_base_var, value="Octal", font="times", bg="#ffe5ec")
+octal.grid(column=3, row=10)
+hexadecimal = tk.Radiobutton(calculator_frame,text="Hexa", variable= to_base_var, value="Hexadecimal", font="times", bg="#ffe5ec")
+hexadecimal.grid(column=4, row=10)
+
+Copy_button = tk.Button(calculator_frame, text="Copy Converted Output", bg="pink",  command=copy_to_clipboard)
+Copy_button.grid(column=1,row=13, columnspan=4)
+
+convert = tk.Button(calculator_frame, text="Convert", width=20, height=1, command=convert, font="times", bg="#fedcdb",bd=5)
+convert.grid(column=1, row=11, columnspan=4)
+
+
+result = tk.Label(calculator_frame, text="", font="times 15", bg="dark gray", width=10, height=1)
+result.grid(column=1, row=12, columnspan=4)
+
+calculator_frame.grid_remove()
+
+toggle = tk.Button(root, text="Show Converter", width=52, height=1, bg="pink", command=toggle_calculator, padx=5,pady=5, bd=5)
+toggle.grid(column=0, row=1, columnspan=6)
+
+clear = tk.Button(root, text="AC", width=8, height=1, bg="burlywood", command=Clear,font="times",cursor="hand2", padx=5,pady=5, bd=5)
+clear.grid(column=0, row=2)
+
+negative = tk.Button(root, text="+/-", width=8, height=1, bg="peach puff", command=Negativeop,font="times",cursor="hand2", padx=5,pady=5, bd=5)
+negative.grid(column=1, row=2)
+
+percent = tk.Button(root, text="%", width=8, height=1, bg="peach puff", command=Percent,font="times",cursor="hand2", padx=5,pady=5, bd=5)
+percent.grid(column=2, row=2)
+
+divide = tk.Button(root, text="/", width=8, height=1, bg="peach puff", command=lambda: bt_Click("/"),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+divide.grid(column=3, row=2)
+
+seven = tk.Button(root, text="7", width=8, height=1, bg="beige", command=lambda: btn_Click("7"),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+seven.grid(column=0, row=3)
+
+eight = tk.Button(root, text="8", width=8, height=1, bg="beige", command=lambda: btn_Click("8") ,font="times",cursor="hand2", padx=5,pady=5, bd=5)
+eight.grid(column=1, row=3)
+
+nine = tk.Button(root, text="9", width=8, height=1, bg="beige", command=lambda: btn_Click("9"),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+nine.grid(column=2, row=3)
+
+times=tk.Button(root,text="x", width=8, height=1, bg="peach puff", command=lambda: bt_Click("*"),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+times.grid(column=3, row=3)
+
+four = tk.Button(root, text="4", width=8, height=1, bg="beige", command=lambda: btn_Click("4"),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+four.grid(column=0, row=4)
+
+five = tk.Button(root, text="5", width=8, height=1, bg="beige", command=lambda: btn_Click("5"),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+five.grid(column=1, row=4)
+
+six = tk.Button(root, text="6", width=8, height=1, bg="beige", command=lambda: btn_Click("6"),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+six.grid(column=2, row=4)
+
+minus=tk.Button(root,text="-", width=8, height=1, bg="peach puff", command=lambda: bt_Click("-"),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+minus.grid(column=3, row=4)
+
+one = tk.Button(root, text="1", width=8, height=1, bg="beige", command=lambda: bt_Click("1"),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+one.grid(column=0, row=5)
+
+two = tk.Button(root, text="2", width=8, height=1, bg="beige", command=lambda: btn_Click("2"),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+two.grid(column=1, row=5)
+
+three = tk.Button(root, text="3", width=8, height=1, bg="beige", command=lambda: btn_Click("3"),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+three.grid(column=2, row=5)
+
+plus = tk.Button(root, text="+", width=8, height=1, bg="peach puff", command=lambda: bt_Click("+"),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+plus.grid(column=3, row=5)
+
+delete = tk.Button(root, text="DEL", width=8, height=1, bg="burlywood", command=Delete,font="times",cursor="hand2", padx=5,pady=5, bd=5)
+delete.grid(column=0, row=6)
+
+zero = tk.Button(root, text="0", width=8, height=1, bg="beige", command=lambda: btn_Click("0"),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+zero.grid(column=1, row=6)
+
+point = tk.Button(root, text=".", width=8, height=1, bg="peach puff", command=lambda: bt_Click("."),font="times",cursor="hand2", padx=5,pady=5, bd=5)
+point.grid(column=2, row=6)
+
+equal = tk.Button(root, text="=", width=8, height=1, bg="peach puff", command=Equal,font="times",cursor="hand2", padx=5,pady=5, bd=5)
+equal.grid(column=3, row=6)
+
+
+
+calculator_frame.grid_remove()
+
+
+root.mainloop()
