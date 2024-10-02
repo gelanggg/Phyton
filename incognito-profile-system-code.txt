@@ -1,0 +1,364 @@
+import random as r
+from time import sleep
+from re import search
+
+
+class System:
+    def __init__(self):
+        self.password = "incognito123"
+        self.id_arr = []
+
+    def id_generator(self):
+        while True:
+            idnum = r.randint(2200000, 2299999)
+            if idnum in self.id_arr:
+                continue
+            else:
+                self.id_arr.append(idnum)
+                break
+        return str(idnum)
+
+
+class Agent:
+    def __init__(self, agent_id, name, age, codename, gender, address, contact, blood_type, citizenship, occupation,
+                 skill,
+                 recruited, mission):
+        self.agent_id = agent_id
+        self.name = name
+        self.codename = codename
+        self.age = age
+        self.gender = gender
+        self.address = address
+        self.contact = contact
+        self.blood_type = blood_type
+        self.citizenship = citizenship
+        self.occupation = occupation
+        self.skill = skill
+        self.recruited = recruited
+        self.mission = mission
+
+
+class AgentID:
+    def __init__(self, agent_id):
+        self.agent_id = agent_id
+
+
+class BloodType:
+    def __init__(self, agent_blood_type):
+        self.agent_blood_type = agent_blood_type
+
+
+class Create:
+    def create_agent(self):
+        print("\n=======================\n")
+        agent_id = sys.id_generator()
+        print(f"New agent ID: {agent_id1}")
+        name = input("Enter the name of new agent: ")
+        codename = input("Enter the codename of new agent: ")
+        while True:
+            age = input("Enter the age of new agent: ")
+            if search(r"[A-Za-z!~@#$%^&*()_+`\-=\[\]{}|:;'<>?,./]", age) != None:
+                print("Invalid age. Try again")
+                continue
+            else:
+                break
+        gender = input("Enter the gender of new agent: ")
+        address = input("Enter the address of new agent: ")
+        contact = input("Enter the contact number of new agent: ")
+        while True:
+            blood_type = input("Enter the blood type of new agent (A/B/AB/O): ")
+            if blood_type.upper() == "A" or blood_type.upper() == "B" or blood_type.upper() == "O" or \
+                           blood_type.upper() == "AB":
+                break
+            else:
+                print("Invalid blood type. Please pick between A, B, AB, or O.")
+                continue
+        blood_type = blood_type.upper()
+        citizenship = input("Enter the citizenship of new agent: ")
+        occupation = input("Enter the civilian occupation of new agent: ")
+        skill = input("Enter the special skill/s of new agent: ")
+        recruited = input("Enter the date of recruitment: ")
+        mission = input("Enter current mission of new agent: ")
+
+        new_agent = Agent(agent_id, name, age, codename, gender, address, contact, blood_type, citizenship,
+                          occupation, skill, recruited, mission)
+        new_agent_id_obj = AgentID(agent_id1)
+
+        agent_dict[agent_id1] = new_agent
+        agent_id_dict[agent_id1] = new_agent_id_obj
+        print("\nCreating profile...")
+        sleep(2)
+        print("\n====NEW AGENT ADDED====\n")
+
+
+class Display:
+    def display_details(self, agent, agent_id):
+        print("---------------------------")
+        print("\nAgent ID:", agent_id.agent_id)
+        print("Full name:", agent.name)
+        print("Age:", agent.age)
+        print("Codename:", agent.codename)
+        print("Gender:", agent.gender)
+        print("Address:", agent.address)
+        print("Contact:", agent.contact)
+        print("Blood type:", agent.blood_type)
+        print("Citizenship:", agent.citizenship)
+        print("Civilian occupation:", agent.occupation)
+        print("Special skill/s:", agent.skill)
+        print("Date recruited:", agent.recruited)
+        print("Current mission:", agent.mission)
+        print("---------------------------")
+
+
+class Edit:
+    def edit_name(self, agent, new_name):
+        agent.name = new_name
+
+    def edit_age(self, agent, new_age):
+        agent.age = new_age
+
+    def edit_address(self, agent, new_address):
+        agent.address = new_address
+
+    def edit_codename(self, agent, new_codename):
+        agent.codename = new_codename
+
+    def edit_gender(self, agent, new_gender):
+        agent.gender = new_gender
+
+    def edit_contact(self, agent, new_contact):
+        agent.contact = new_contact
+
+    def edit_citizenship(self, agent, new_citizenship):
+        agent.citizenship = new_citizenship
+
+    def edit_occupation(self, agent, new_occupation):
+        agent.occupation = new_occupation
+
+    def edit_skill(self, agent, new_skill):
+        agent.skill = new_skill
+
+    def edit_recruited(self, agent, new_recruited):
+        agent.recruited = new_recruited
+
+    def edit_mission(self, agent, new_mission):
+        agent.mission = new_mission
+
+
+class Delete:
+    def delete_agent(self, agent_dict, agent_id_dict, agent_id):
+        if agent_id in agent_dict:
+            del agent_dict[agent_id]
+            del agent_id_dict[agent_id]
+            print("AGENT INFORMATIONS DELETED!")
+        else:
+            print("AGENT ID NOT FOUND.")
+
+
+sys = System()  # Create system
+
+# Create dictionaries to store agent and agent_id objects
+agent_dict = {}
+agent_id_dict = {}
+agent_blood_type_dict = {}
+
+# Input details for the first agent
+# agent_id, name, age, codename, gender, address, contact, blood_type, citizenship, occupation,
+#                  skill, recruited, mission
+name1 = "Laarnie Rose Payumo"
+codename1 = "Rose"
+agent_id1 = "2201199"
+age1 = 19
+gender1 = "Female"
+address1 = "Buyagan"
+contact1 = "09xxxxxxxxx"
+blood_type1 = "O"
+citizenship1 = "Filipino"
+occupation1 = "Student"
+skill1 = "skill 1"
+recruited1 = "xx/xx/xx"
+mission1 = "Observation"
+
+# Create objects for the first agent
+agent1 = Agent(agent_id1, name1, age1, codename1, gender1, address1, contact1, blood_type1, citizenship1,
+               occupation1, skill1, recruited1, mission1)
+agent_id_obj1 = AgentID(agent_id1)
+agent_blood_type_obj1 = BloodType(blood_type1)
+
+# Input details for the second agent
+name2 = "Cynthia Rose Unos"
+codename2 = "Rose 2"
+agent_id2 = sys.id_generator()
+age2 = 19
+gender2 = "Female"
+address2 = "Balili"
+contact2 = "0965xxxxxxx"
+blood_type2 = "C"
+citizenship2 = "Filipino"
+occupation2 = "Student"
+skill2 = "Skill 2"
+recruited2 = "xx/xx/xx"
+mission2 = "Observation"
+
+# Create objects for the second agent
+agent2 = Agent(agent_id2, name2, age2, codename2, gender2, address2, contact2, blood_type2, citizenship2,
+               occupation2, skill2, recruited2, mission2)
+agent_id_obj2 = AgentID(agent_id2)
+agent_blood_type_obj2 = BloodType(blood_type2)
+
+# Store the agent and agent_id objects in dictionaries
+agent_dict[agent_id1] = agent1
+agent_dict[agent_id2] = agent2
+agent_id_dict[agent_id1] = agent_id_obj1
+agent_id_dict[agent_id2] = agent_id_obj2
+agent_blood_type_dict[agent_id1] = agent_blood_type_obj1
+agent_blood_type_dict[agent_id2] = agent_blood_type_obj2
+
+# Create instances of the classes
+display = Display()
+editor = Edit()
+deleter = Delete()
+create = Create()
+
+tries = 3
+print("---------------------------------")
+print("  Profiles of Incognito Agents.")
+print("---------------------------------")
+
+while tries > 0:
+    input_password = input(f"Enter password ({tries} attempt/s left): ")
+    if input_password == sys.password:
+        break
+    else:
+        tries -= 1
+        if tries == 0:
+            print("Access denied!")
+            quit()
+        continue
+
+while True:
+    print("\nOptions:")
+    print("Select A to search an agent profile")
+    print("Select B to edit an agent profile")
+    print("Select C to create new profile")
+    print("Select D to delete a profile")
+    print("Select E to exit system")
+
+    choice = input("Enter your choice (A/B/C/D/E): ")
+
+    if choice.upper() == "A":
+        search_by = input("Search an agent profile according to (blood type/id): ")
+        if search_by.lower() == "id":
+            selected_agent_id = input("\nEnter an agent ID to display details: ")
+            if selected_agent_id in agent_dict:
+                display.display_details(agent_dict[selected_agent_id], agent_id_dict[selected_agent_id])
+            else:
+                print("agent ID not found.")
+        elif search_by.lower() == "blood type":
+            idnums = []
+            selected_blood_type = input("Enter a blood type (A/B/AB/O): ").upper()
+            if selected_blood_type.upper() == "O":
+                for id, type in agent_blood_type_dict.items():
+                    if type.agent_blood_type == "O":
+                        idnums.append(id)
+                print(f"Agent IDs with blood type {selected_blood_type}")
+                print("\n".join(idnums))
+            elif selected_blood_type.upper() == "A":
+                for id, type in agent_blood_type_dict.items():
+                    if type.agent_blood_type == "A":
+                        idnums.append(id)
+                print(f"Agent IDs with blood type {selected_blood_type}")
+                print("\n".join(idnums))
+            elif selected_blood_type.upper() == "B":
+                for id, type in agent_blood_type_dict.items():
+                    if type.agent_blood_type == "B":
+                        idnums.append(id)
+                print(f"Agent IDs with blood type {selected_blood_type}")
+                print("\n".join(idnums))
+            elif selected_blood_type.upper() == "AB":
+                for id, type in agent_blood_type_dict.items():
+                    if type.agent_blood_type == "AB":
+                        idnums.append(id)
+                print(f"Agent IDs with blood type {selected_blood_type}")
+                print("\n".join(idnums))
+            else:
+                print("\nInvalid blood type.")
+        else:
+            print("\nPlease select between id and blood type only.")
+
+
+    elif choice.upper() == "B":
+        selected_agent_id = input("\nEnter an agent ID profile to edit: ")
+        if selected_agent_id in agent_dict:
+            print(f"Agent ID: {selected_agent_id}")
+            while True:
+                print("[name / age / codename / gender / address / contact / blood_type /\ncitizenship / occupation / "
+                      "skill / recruited / mission / none]")
+                which_info = input("Select which information to edit from above:\n")
+                if which_info.lower() == "name":
+                    new_name = input("Enter the new name: ")
+                    editor.edit_name(agent_dict[selected_agent_id], new_name)
+                    break
+                elif which_info.lower() == "age":
+                    while True:
+                        new_age = input("Enter the new age: ")
+                        if search(r"[A-Za-z!~@#$%^&*()_+`\-=\[\]{}|:;'<>?,./]", new_age) != None:
+                            print("Invalid age. Try again")
+                            continue
+                        else:
+                            editor.edit_age(agent_dict[selected_agent_id], new_age)
+                            break
+                elif which_info.lower() == "codename":
+                    new_codename = input("Enter the new codename: ")
+                    editor.edit_codename(agent_dict[selected_agent_id], new_codename)
+                    break
+                elif which_info.lower() == "gender":
+                    new_gender = input("Enter the new gender: ")
+                    editor.edit_gender(agent_dict[selected_agent_id], new_gender)
+                    break
+                elif which_info.lower() == "address":
+                    new_address = input("Enter the new address: ")
+                    editor.edit_address(agent_dict[selected_agent_id], new_address)
+                    break
+                elif which_info.lower() == "contact":
+                    new_contact = input("Enter the new contact: ")
+                    editor.edit_contact(agent_dict[selected_agent_id], new_contact)
+                    break
+                elif which_info.lower() == "citizenship":
+                    new_citizenship = input("Enter the agent's new citizenship: ")
+                    editor.edit_citizenship(agent_dict[selected_agent_id], new_citizenship)
+                    break
+                elif which_info.lower() == "occupation":
+                    new_occupation = input("Enter the agent's new civilian occupation: ")
+                    editor.edit_occupation(agent_dict[selected_agent_id], new_occupation)
+                    break
+                elif which_info.lower() == "skill":
+                    new_skill = input("Enter the agent's new skill: ")
+                    editor.edit_skill(agent_dict[selected_agent_id], new_skill)
+                    break
+                elif which_info.lower() == "mission":
+                    new_mission = input("Enter the agent's new mission: ")
+                    editor.edit_mission(agent_dict[selected_agent_id], new_mission)
+                    break
+                elif which_info.lower() == "none":
+                    break
+                else:
+                    print("Invalid choice. Please enter an existing information category.")
+                    continue
+        else:
+            print("Agent ID not found.")
+
+    elif choice.upper() == "C":
+        create.create_agent()
+
+    elif choice.upper() == "D":
+        selected_agent_id = input("\nEnter an agent ID to delete the profile: ")
+        deleter.delete_agent(agent_dict, agent_id_dict, selected_agent_id)
+
+    elif choice.upper() == "E":
+        print("Exiting the program...")
+        sleep(2)
+        break
+
+    else:
+        print("Invalid choice. Please select a valid option.")
